@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from hotels.models import Hotel, Room
+from hotels.models import *
 
 
 # ==============================
