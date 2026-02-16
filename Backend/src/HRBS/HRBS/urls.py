@@ -8,7 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("api/v1/customer/",include("api.v1.customer.urls")),
     path("api/v1/hotels/",include("api.v1.hotels.urls")),
-    path('api/v1/bookings/', include('api.v1.bookings.urls')),
+    path('api/v1/booking/', include('api.v1.booking.urls')),
 
 
 ]

@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Q
 
-from .models import Hotel, Room
+from hotels.models import Hotel, Room
 from .serializers import HotelSerializer, RoomSerializer
 
 

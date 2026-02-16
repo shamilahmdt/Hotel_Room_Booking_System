@@ -4,10 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 
-import random
 from django.contrib.auth import authenticate, get_user_model
-from django.conf import settings
-from django.core.mail import send_mail
 from api.v1.customer.serializers import *
 from customer.models import Customer
 
@@ -25,87 +22,20 @@ def register(request):
 
     if serializer.is_valid():
 
-        # Create user
         user = serializer.save()
         user.is_customer = True
-        user.is_active = False   # prevent login before verification
-
-        # Generate OTP
-        otp = random.randint(100000, 999999)
-        user.otp = str(otp)
+        user.is_active = True  # Activate immediately
         user.save()
 
-        # Send OTP Email
-        try:
-            send_mail(
-                subject="Your OTP Verification Code",
-                message=f"Your OTP is: {otp}",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-                fail_silently=False
-            )
-        except Exception as e:
-            return Response(
-                {
-                    "message": "User created but OTP sending failed",
-                    "error": str(e)
-                },
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
-        # Create Customer Profile
+        # Create Customer profile
         Customer.objects.create(user=user)
 
         return Response(
-            {
-                "message": "Registration successful. OTP sent to email."
-            },
+            {"message": "Registration successful."},
             status=status.HTTP_201_CREATED
         )
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# ==============================
-# VERIFY OTP
-# ==============================
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def verify_otp(request):
-
-    email = request.data.get('email')
-    otp = request.data.get('otp')
-
-    if not email or not otp:
-        return Response(
-            {"error": "Email and OTP are required"},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-
-    try:
-        user = User.objects.get(email=email)
-
-        if user.otp != otp:
-            return Response(
-                {"error": "Invalid OTP"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        user.is_verified = True
-        user.is_active = True
-        user.otp = None
-        user.save()
-
-        return Response(
-            {"message": "Email verified successfully"},
-            status=status.HTTP_200_OK
-        )
-
-    except User.DoesNotExist:
-        return Response(
-            {"error": "User not found"},
-            status=status.HTTP_404_NOT_FOUND
-        )
 
 
 # ==============================
@@ -130,12 +60,6 @@ def login(request):
         return Response(
             {"error": "Invalid credentials"},
             status=status.HTTP_401_UNAUTHORIZED
-        )
-
-    if not user.is_verified:
-        return Response(
-            {"error": "Account not verified"},
-            status=status.HTTP_403_FORBIDDEN
         )
 
     refresh = RefreshToken.for_user(user)
@@ -178,7 +102,7 @@ def logout(request):
             {"error": "Invalid or expired token"},
             status=status.HTTP_400_BAD_REQUEST
         )
-    
+
 
 # ==============================
 # PROFILE VIEW
@@ -187,28 +111,20 @@ def logout(request):
 @permission_classes([IsAuthenticated])
 def profile_view(request):
 
-    try:
-        serializer = UserSerializer(
-            request.user,
-            context={"request": request}
-        )
+    serializer = UserSerializer(
+        request.user,
+        context={"request": request}
+    )
 
-        return Response(
-            {
-                "message": "Profile retrieved successfully",
-                "data": serializer.data
-            },
-            status=status.HTTP_200_OK
-        )
+    return Response(
+        {
+            "message": "Profile retrieved successfully",
+            "data": serializer.data
+        },
+        status=status.HTTP_200_OK
+    )
 
-    except Exception as e:
-        return Response(
-            {
-                "error": f"Failed to retrieve profile: {str(e)}"
-            },
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
-    
+
 # ==============================
 # PROFILE UPDATE
 # ==============================
@@ -216,39 +132,28 @@ def profile_view(request):
 @permission_classes([IsAuthenticated])
 def profile_update(request):
 
-    try:
-        user = request.user
+    serializer = UserSerializer(
+        request.user,
+        data=request.data,
+        partial=True,
+        context={"request": request}
+    )
 
-        serializer = UserSerializer(
-            user,
-            data=request.data,
-            partial=True,   # allows updating only specific fields
-            context={"request": request}
-        )
-
-        if serializer.is_valid():
-            serializer.save()
-
-            return Response(
-                {
-                    "message": "Profile updated successfully",
-                    "data": serializer.data
-                },
-                status=status.HTTP_200_OK
-            )
+    if serializer.is_valid():
+        serializer.save()
 
         return Response(
             {
-                "error": "Validation failed",
-                "details": serializer.errors
+                "message": "Profile updated successfully",
+                "data": serializer.data
             },
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_200_OK
         )
 
-    except Exception as e:
-        return Response(
-            {
-                "error": f"Failed to update profile: {str(e)}"
-            },
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
+    return Response(
+        {
+            "error": "Validation failed",
+            "details": serializer.errors
+        },
+        status=status.HTTP_400_BAD_REQUEST
+    )

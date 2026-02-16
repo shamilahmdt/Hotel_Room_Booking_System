@@ -1,11 +1,70 @@
+import { Routes, Route, Navigate } from "react-router-dom";
+import DashboardLayout from "./layouts/DashboardLayout";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import HotelList from "./pages/hotels/HotelList";
+import HotelDetail from "./pages/hotels/HotelDetail";
+import BookingForm from "./pages/bookings/BookingForm";
+import BookingHistory from "./pages/bookings/BookingHistory";
+import PrivateRoute from "./routes/PrivateRoute";
+
 function App() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <h1 className="text-3xl font-bold text-blue-600">
-        HRBS Frontend Ready 🚀
-      </h1>
-    </div>
-  )
+    <Routes>
+
+      {/* Default route → Login */}
+      <Route path="/" element={<Navigate to="/login" />} />
+
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+
+      {/* Protected Dashboard Routes */}
+      <Route
+        path="/dashboard"
+        element={
+          <PrivateRoute>
+            <DashboardLayout>
+              <HotelList />
+            </DashboardLayout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/hotel-detail/:id"
+        element={
+          <PrivateRoute>
+            <DashboardLayout>
+              <HotelDetail />
+            </DashboardLayout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/book-room/:roomId"
+        element={
+          <PrivateRoute>
+            <DashboardLayout>
+              <BookingForm />
+            </DashboardLayout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/bookings"
+        element={
+          <PrivateRoute>
+            <DashboardLayout>
+              <BookingHistory />
+            </DashboardLayout>
+          </PrivateRoute>
+        }
+      />
+
+    </Routes>
+  );
 }
 
-export default App
+export default App;

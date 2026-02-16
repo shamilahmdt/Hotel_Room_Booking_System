@@ -14,9 +14,6 @@ class User(AbstractUser):
     is_agent = models.BooleanField(default=False)
     is_manager = models.BooleanField(default=False)
 
-    otp = models.CharField(max_length=6,blank=True,null=True)
-    is_verified = models.BooleanField(default=False)
-
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
