@@ -63,7 +63,7 @@ function RoomList({ hotelId }) {
             </p>
 
             <p className="text-blue-600 font-semibold mt-2">
-              ₹ {room.price} / night
+              ₹ {room.price_per_night} / night
             </p>
 
             <button

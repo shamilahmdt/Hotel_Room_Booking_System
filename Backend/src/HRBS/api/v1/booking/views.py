@@ -18,28 +18,44 @@ from .serializers import *
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_booking(request):
+    data = request.data.copy()
+    room_id = data.get("room")
 
-    serializer = BookingSerializer(data=request.data)
+    # check room exists
+    try:
+        room = Room.objects.get(id=room_id)
+    except Room.DoesNotExist:
+        return Response({"error": "Room not found"}, status=404)
 
+    # parse dates
+    try:
+        check_in = datetime.strptime(data.get("check_in"), "%Y-%m-%d").date()
+        check_out = datetime.strptime(data.get("check_out"), "%Y-%m-%d").date()
+    except Exception:
+        return Response({"error": "Invalid date format"}, status=400)
+
+    if check_out <= check_in:
+        return Response({"error": "Check-out must be after check-in"}, status=400)
+
+    # calculate total_price
+    nights = (check_out - check_in).days
+    total_price = room.price_per_night * nights
+
+    # create booking via serializer
+    serializer = BookingSerializer(data=data)
     if serializer.is_valid():
-
-        booking = serializer.save(user=request.user)
-
-        # 🔢 Calculate total price
-        nights = (booking.check_out - booking.check_in).days
-        booking.total_price = nights * booking.room.price_per_night
-        booking.status = "confirmed"
-        booking.save()
-
-        return Response(
-            {
-                "message": "Booking created successfully",
-                "data": BookingSerializer(booking).data
-            },
-            status=status.HTTP_201_CREATED
+        booking = serializer.save(
+            user=request.user,
+            total_price=total_price,
+            status="confirmed"
         )
+        return Response({
+            "message": "Booking created successfully",
+            "data": BookingSerializer(booking).data
+        }, status=201)
 
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # if serializer fails
+    return Response(serializer.errors, status=400)
 
 # ==============================
 # MY BOOKINGS (Customer)
