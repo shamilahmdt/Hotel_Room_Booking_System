@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Sidebar from "../components/Sidebar";
-import NavbarTop from "../components/NavbarTop";
+import Navbar from "../components/Navbar";
 
 function DashboardLayout({ children }) {
   const [isOpen, setIsOpen] = useState(true);
@@ -10,7 +10,7 @@ function DashboardLayout({ children }) {
       <Sidebar isOpen={isOpen} />
 
       <div className="flex-1 flex flex-col">
-        <NavbarTop toggleSidebar={() => setIsOpen(!isOpen)} />
+        <Navbar toggleSidebar={() => setIsOpen(!isOpen)} />
         <main className="p-6">{children}</main>
       </div>
     </div>

@@ -6,6 +6,7 @@ import HotelList from "./pages/hotels/HotelList";
 import HotelDetail from "./pages/hotels/HotelDetail";
 import BookingForm from "./pages/bookings/BookingForm";
 import BookingHistory from "./pages/bookings/BookingHistory";
+import Profile from "./pages/profile/Profile"; 
 import PrivateRoute from "./routes/PrivateRoute";
 
 function App() {
@@ -58,6 +59,17 @@ function App() {
           <PrivateRoute>
             <DashboardLayout>
               <BookingHistory />
+            </DashboardLayout>
+          </PrivateRoute>
+        } 
+      />
+
+      <Route
+        path="/profile"
+        element={
+          <PrivateRoute>
+            <DashboardLayout>
+              <Profile />
             </DashboardLayout>
           </PrivateRoute>
         }
