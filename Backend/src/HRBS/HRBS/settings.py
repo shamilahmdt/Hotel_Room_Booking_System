@@ -1,6 +1,7 @@
 
 from pathlib import Path
 from datetime import timedelta
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -70,13 +71,12 @@ WSGI_APPLICATION = 'HRBS.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'Hotel_Room_Booking_System',
-        'HOST': 'localhost',
-        'USER': 'shamil',
-        'PASSWORD': '1234' ,
-        'PORT': "5432"
-        
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME', 'Hotel_Room_Booking_System'),
+        'USER': os.environ.get('DB_USER', 'shamil'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', '1234'),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
 
