@@ -1,6 +1,6 @@
 # 🏨 Hotel Room Booking System (HRBS)
 
-![HRBS Banner](media/banner.png)
+<!-- ![HRBS Banner](media/banner.png) -->
 
 A modern, high-performance, and feature-rich Hotel Room Booking System designed for luxury and efficiency. HRBS provides a seamless experience for both hotel managers and customers, offering real-time room management, secure bookings, and an elegant user interface.
 
