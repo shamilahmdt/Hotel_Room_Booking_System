@@ -6,12 +6,17 @@ import HotelList from "./pages/hotels/HotelList";
 import HotelDetail from "./pages/hotels/HotelDetail";
 import BookingForm from "./pages/bookings/BookingForm";
 import BookingHistory from "./pages/bookings/BookingHistory";
+import Favorites from "./pages/favorites/Favorites";
 import Profile from "./pages/profile/Profile"; 
 import PrivateRoute from "./routes/PrivateRoute";
 
+import { Toaster } from "react-hot-toast";
+
 function App() {
   return (
-    <Routes>
+    <>
+      <Toaster position="top-center" reverseOrder={false} />
+      <Routes>
 
       {/* Default route → Login */}
       <Route path="/" element={<Navigate to="/login" />} />
@@ -65,6 +70,17 @@ function App() {
       />
 
       <Route
+        path="/favorites"
+        element={
+          <PrivateRoute>
+            <DashboardLayout>
+              <Favorites />
+            </DashboardLayout>
+          </PrivateRoute>
+        }
+      />
+
+      <Route
         path="/profile"
         element={
           <PrivateRoute>
@@ -75,7 +91,8 @@ function App() {
         }
       />
 
-    </Routes>
+      </Routes>
+    </>
   );
 }
 

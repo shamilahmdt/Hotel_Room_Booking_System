@@ -55,6 +55,8 @@ def login(request):
         )
 
     user = authenticate(email=email, password=password)
+    print(f"DEBUG: Attempting login for email: {email}")
+    print(f"DEBUG: User found: {user}")
 
     if user is None:
         return Response(

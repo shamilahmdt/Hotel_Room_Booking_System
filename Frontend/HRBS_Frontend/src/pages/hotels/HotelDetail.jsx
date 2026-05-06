@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { hotelsAPI } from "../../api/hotelsAPI";
+import { HiArrowNarrowLeft } from "react-icons/hi";
 import RoomList from "../rooms/RoomList";
 
 function HotelDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [hotel, setHotel] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -31,17 +33,28 @@ function HotelDetail() {
   if (!hotel) return <p>Hotel not found.</p>;
 
   return (
-    <div className="p-6">
-      <div className="bg-white p-6 rounded-2xl shadow mb-6">
-        <h1 className="text-2xl font-bold text-blue-700">
+    <div className="max-w-6xl mx-auto">
+      {/* Back Button */}
+      <button 
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-2 text-blue-700 font-bold mb-6 hover:text-blue-800 transition"
+      >
+        <HiArrowNarrowLeft className="text-2xl" />
+        Back
+      </button>
+
+      <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
+        <h1 className="text-3xl font-extrabold text-gray-900 mb-2">
           {hotel.name}
         </h1>
 
-        <p className="text-gray-500">{hotel.location}</p>
-
-        <p className="mt-3 text-gray-600">
-          {hotel.amenities}
+        <p className="text-blue-600 font-medium mb-4 flex items-center gap-1">
+          <span className="text-gray-400">📍</span> {hotel.location}
         </p>
+
+        <div className="prose max-w-none text-gray-600">
+          <p>{hotel.amenities}</p>
+        </div>
       </div>
 
       {/* Pass correct hotel id to RoomList */}
